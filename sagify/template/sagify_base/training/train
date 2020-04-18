@@ -6,13 +6,28 @@ import argparse
 import os
 import sys;sys.path.insert(1, ".")  # Do not remove this
 import traceback
-from sagify_base.training.training import train as train_function
+from src.sagify_base.training.training import train as train_function
 
 
 # The default path arguments values are used when training happens in SageMaker
 # Arguments are provided if you want to run/test this script as a normal python script locally.
 _DEFAULT_PREFIX_PATH = '/opt/ml/'
 
+job_control_file = '../job_config.toml'
+if not os.path.exists(job_control_file):
+    with open() as f:
+        job_control_file = toml.load(f)
+    _DEFAULT_PREFIX_PATH   = job_control_file['default_prefix_path_']
+    input_data_path_       = job_control_file['input_data_path_']
+    model_save_path_       = job_control_file['model_save_path_']
+    hyperparams_json_file_ = job_control_file['hyperparams_json_file_']
+    failure_               = job_control_file['log_dir_']
+else:
+    _DEFAULT_PREFIX_PATH   = '/opt/ml/'
+    input_data_path_       = 'input/data/training/'
+    model_save_path_       = 'model'
+    hyperparams_json_file_ = 'input/config/hyperparameters.json'
+    failure_               = 'failure'
 
 def _parse_args():
     parser = argparse.ArgumentParser()
@@ -24,27 +39,27 @@ def _parse_args():
         help='input directory path where all the training file(s) reside in',
         type=str,
         dest='input_data_path',
-        default=os.path.join(_DEFAULT_PREFIX_PATH, 'input/data/training')
+        default=os.path.join(_DEFAULT_PREFIX_PATH, input_data_path_)
     )
     required.add_argument(
         '-m', '--model-save-dir',
         help='directory path to save your model(s)',
         type=str,
         dest='model_save_path',
-        default=os.path.join(_DEFAULT_PREFIX_PATH, 'model')
+        default=os.path.join(_DEFAULT_PREFIX_PATH, model_save_path_)
     )
     parser.add_argument(
         '-p', '--hyperparams-json-file',
         help='input path to hyperparams json file',
         type=str,
-        default=os.path.join(_DEFAULT_PREFIX_PATH, 'input/config/hyperparameters.json'),
+        default=os.path.join(_DEFAULT_PREFIX_PATH, hyperparams_json_file_),
         dest='hyperparams_path'
     )
     parser.add_argument(
         '-f', '--failure-dir',
         help='output directory path to save your failure(s) files',
         type=str,
-        default=os.path.join(_DEFAULT_PREFIX_PATH, 'failure'),
+        default=os.path.join(_DEFAULT_PREFIX_PATH, failure_),
         dest='failure_output'
     )
 
@@ -67,6 +82,13 @@ def train(input_data_path, model_save_path, hyperparams_path=None, failure_outpu
     failure(s) files
     """
     print('Starting the training.')
+  
+    if not os.path.exists(failure_output):
+        try:
+            os.makedirs(failure_output)
+        except Exception as e: 
+            print(e)
+
     try:
         train_function(
             input_data_path=input_data_path,
