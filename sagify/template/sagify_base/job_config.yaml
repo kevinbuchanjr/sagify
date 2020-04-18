@@ -1,0 +1,10 @@
+################################################################
+# Job configuration file for Amazon SageMaker job              #
+################################################################
+
+# Amazon SageMaker job configuration
+default_prefix_path_   = ''
+input_data_path_       = ''
+model_save_path_       = ''
+hyperparams_json_file_ = ''
+log_dir_               = ''
