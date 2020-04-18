@@ -67,6 +67,13 @@ def train(input_data_path, model_save_path, hyperparams_path=None, failure_outpu
     failure(s) files
     """
     print('Starting the training.')
+    
+    if not os.path.exists(failure_output):
+        try:
+            os.makedirs(failure_output)
+        except Exception as e: 
+            print(e)
+    
     try:
         train_function(
             input_data_path=input_data_path,
