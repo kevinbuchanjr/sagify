@@ -53,17 +53,20 @@ def _read_hyperparams_ranges_config(hyperparams_config_file_path):
 
     hyperparameter_ranges = {}
 
-    categorical_param_ranges_dict = parameter_ranges_dict['CategoricalParameterRanges']
-    for _dict in categorical_param_ranges_dict:
-        hyperparameter_ranges[_dict['Name']] = CategoricalParameter(_dict['Values'])
+    if 'CategoricalParameterRanges' in parameter_ranges_dict:
+        categorical_param_ranges_dict = parameter_ranges_dict['CategoricalParameterRanges']
+        for _dict in categorical_param_ranges_dict:
+            hyperparameter_ranges[_dict['Name']] = CategoricalParameter(_dict['Values'])
 
-    integer_param_ranges_dict = parameter_ranges_dict['IntegerParameterRanges']
-    for _dict in integer_param_ranges_dict:
-        hyperparameter_ranges[_dict['Name']] = IntegerParameter(_dict['MinValue'], _dict['MaxValue'])
+    if 'IntegerParameterRanges' in parameter_ranges_dict:
+        integer_param_ranges_dict = parameter_ranges_dict['IntegerParameterRanges']
+        for _dict in integer_param_ranges_dict:
+            hyperparameter_ranges[_dict['Name']] = IntegerParameter(_dict['MinValue'], _dict['MaxValue'])
 
-    continuous_param_ranges_dict = parameter_ranges_dict['ContinuousParameterRanges']
-    for _dict in continuous_param_ranges_dict:
-        hyperparameter_ranges[_dict['Name']] = ContinuousParameter(_dict['MinValue'], _dict['MaxValue'])
+    if 'ContinuousParameterRanges' in parameter_ranges_dict:
+        continuous_param_ranges_dict = parameter_ranges_dict['ContinuousParameterRanges']
+        for _dict in continuous_param_ranges_dict:
+            hyperparameter_ranges[_dict['Name']] = ContinuousParameter(_dict['MinValue'], _dict['MaxValue'])
 
     return objective_name, objective_type, hyperparameter_ranges
 
